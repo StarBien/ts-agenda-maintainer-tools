@@ -1,0 +1,37 @@
+{
+    "37f3867d-89c2-4401-a3f5-a379325f77c4" : {
+        "starbienId": "37f3867d-89c2-4401-a3f5-a379325f77c4",
+        "name": "TM | CHILLAN",
+        "cliniId": 17
+    },
+    "e3242924-1258-4555-92e3-411e87439eea" : {
+        "starbienId": "e3242924-1258-4555-92e3-411e87439eea",
+        "name": "CENTRO DE SALUD | SALVADOR - PROVIDENCIA",
+        "cliniId": 50
+    },
+    "05f8f093-0589-49c8-aef7-1f2bec6c0e40" : {
+        "starbienId": "05f8f093-0589-49c8-aef7-1f2bec6c0e40",
+        "name": "CENTRO DE SALUD | ALAMEDA - METRO MONEDA",
+        "cliniId": 51
+    },
+    "fa05ee13-70c4-48ac-967d-be85aaf8974d" : {
+        "starbienId": "fa05ee13-70c4-48ac-967d-be85aaf8974d",
+        "name": "CENTRO DE SALUD | LA FLORIDA",
+        "cliniId": 52
+    },
+    "12828101-b806-47be-bfb8-47c631edb119" : {
+        "starbienId": "12828101-b806-47be-bfb8-47c631edb119",
+        "name": "CENTRO DE SALUD | MAIPU",
+        "cliniId": 53
+    },
+    "448cf656-8750-4017-af9e-a39f4694ea90" : {
+        "starbienId": "448cf656-8750-4017-af9e-a39f4694ea90",
+        "name": "CENTRO DE SALUD | SAN MIGUEL",
+        "cliniId": 54
+    },
+    "7f9cfd43-376c-47d9-8d4c-a646dc11ce7e" : {
+        "starbienId": "7f9cfd43-376c-47d9-8d4c-a646dc11ce7e",
+        "name": "CENTRO DE SALUD | INDEPENDENCIA - HIPODROMO",
+        "cliniId": 55
+    }
+    }
