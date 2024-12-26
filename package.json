@@ -4,8 +4,9 @@
   "description": "Herramientas de automatización para tareas de mantenimiento",
   "main": "main.js",
   "scripts": {
+    "build": "tsc",
+    "dev": "node --env-file=.env --watch -r ts-node/register src/index.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node main.js",
     "start:genSQL": "node ./utils/CLINI/generate-sql-files.ts",
     "new-branches": "node ./utils/CLINI/new_branches.js"
   },
