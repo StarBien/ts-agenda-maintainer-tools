@@ -5,13 +5,11 @@ import { Branch, Clinic } from "../../types/schemas/medical";
 
 export default function execute() {
 
-    let clinic = new Clinic()
+    let clinic = new Clinic('Test Clinic');
 
     console.log(genClinic(clinic))
 
 } 
-
-execute();
 
 export const genClinic = (clinic : Clinic) => {
 

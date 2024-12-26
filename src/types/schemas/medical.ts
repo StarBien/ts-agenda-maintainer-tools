@@ -5,7 +5,17 @@ export class Clinic {
     id : string | null = null
     name : string
     hasOnlineBooking : boolean = false
-    locationType : LocationType
+    locationType : LocationType = LocationType.FACILITIES
+
+    constructor(
+        name : string, 
+        id? : string,
+        locationType? : LocationType,
+    ) {
+        this.name = name;
+        if(id) this.id = id;
+        if(locationType) this.locationType = locationType;
+    }
 }
 
 export type Branch = {
