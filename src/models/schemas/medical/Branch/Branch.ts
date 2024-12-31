@@ -1,3 +1,5 @@
+import { ClinicResource } from "../ClinicResource/ClinicResource"
+import { Specialty } from "../Specialty/Specialty"
 
 interface BranchInterface {
     getId : () => string
@@ -31,6 +33,9 @@ export class Branch implements BranchInterface {
     private readonly longitude : number
     private readonly altitude : number
     private readonly phone : string
+
+    resources : ClinicResource[] = []
+    specialties : Specialty[] = []
 
     constructor(
         id : string,

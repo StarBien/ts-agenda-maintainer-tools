@@ -1,7 +1,6 @@
+import { BranchBuilder } from '@src/models/schemas/medical/Branch/BranchBuilder';
+import Clinic from '@src/models/schemas/medical/Clinic/Clinic';
 import { v4 as uuidv4 } from 'uuid';
-
-import { Branch, BranchBuilder, Clinic } from "../../types/schemas/medical";
-
 
 export default function execute() {
 

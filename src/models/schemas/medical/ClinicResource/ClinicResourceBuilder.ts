@@ -1,3 +1,4 @@
+import { v4 as uuidv4 } from 'uuid';
 import { ClinicResource } from "./ClinicResource"
 
 export class ClinicResourceBuilder {
@@ -20,7 +21,7 @@ export class ClinicResourceBuilder {
 
     build() : ClinicResource {
         this.clinicResource = new ClinicResource(
-            this.id,
+            this.id ? this.id : uuidv4(),
             this.name,
             this.country,
             this.region,
