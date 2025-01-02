@@ -1,0 +1,4 @@
+
+## GET SPREADSHEET VALUES
+
+GET https://sheets.googleapis.com/v4/spreadsheets/1jVrtnhKW5u3P_Ab_z5ELrrErXdJm7C0CJ3b_eHfdJ5k/values:batchGet
