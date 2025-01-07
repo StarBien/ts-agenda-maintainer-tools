@@ -13,7 +13,9 @@
   "author": "Guido Castrogiovanni",
   "license": "ISC",
   "dependencies": {
+    "@types/convert-excel-to-json": "^1.7.4",
     "@types/google-apps-script": "^1.0.89",
+    "convert-excel-to-json": "^1.7.0",
     "express": "^4.21.2",
     "uuid": "^11.0.3"
   },

@@ -38,6 +38,9 @@ UUID	CENTRO DE SALUD | INDEPENDENCIA - HIPODROMO	55
  * assPractitionerToSpecialty
  * assPractitionerToBranch
  * 
+ * OBS: Practitioners have to be 
+ * addded to the persons table
+ * 
  * -------------------------------
  * 
  * Flow to create new branches with resources
