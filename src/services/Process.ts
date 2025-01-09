@@ -14,15 +14,23 @@ function initializeUUIDs() {
 
     console.log('Data keys:', Object.keys(data))
 
+    
+
+    
+
     for(const key of Object.keys(data)) {
         if (Object.prototype.hasOwnProperty.call(data, key)) {
-            console.log(`Items in ${key}: {data[key]}`)
+            // console.log(`Items in ${key}: ${data[key]}`)
         }
         
     }
 
-    console.log('Keys? : ', data[0])
+    // console.log('Keys? : ', data[0])
     
+    [
+        ['Clinicas', []],
+        ['']
+    ]
     
     
     console.log('Finished initializing UUIDs...')

@@ -2,6 +2,11 @@
 
 import fs from 'node:fs'
 import excelToJson from 'convert-excel-to-json';
+import Clinic from '@src/models/schemas/medical/Clinic/Clinic';
+import { Medic } from '@src/models/schemas/medical/Medic/Medic';
+import { ClinicResource } from '@src/models/schemas/medical/ClinicResource/ClinicResource';
+import { Specialty } from '@src/models/schemas/medical/Specialty/Specialty';
+import { Branch } from '@src/models/schemas/medical/Branch/Branch';
 
 // type InputType = {
 //     [key : string] : any[]
@@ -124,19 +129,16 @@ const removeEmptyRows = (rows : any[]) => {
     return rows.filter(row => Object.entries(row).length > 1);
 }
 
-const cleanData = (data : Object) => {
+const cleanData = (data : Object) : InputDataType => {
     // return Object.entries(data).map(x => [x[0], removeEmptyRows(x[1])])
 
-    type Dictionary<T> = {
-        [key : string] : T
-    }
-
-    let result : Record<string, any> = {};
+    let result = {} as InputDataType;
     const sheetNames = Object.keys(data)
 
-    Object.entries(data).forEach((x, i) => 
-        result[sheetNames[i]] = removeEmptyRows(x[1])
-    )
+    // Object.entries(data).forEach((x, i) => 
+    //     // result[sheetNames[i]] = removeEmptyRows(x[1])
+    //     // result.
+    // )
 
     return result;
 
@@ -149,3 +151,14 @@ console.log(output)
 console.log('EOF')
 
 export default [[branchesMap, specialtiesMap], output]
+
+//-------------------------------------------------
+
+
+type InputDataType = {
+    Clinicas : Clinic[]
+    Sedes : Branch[]
+    Recursos : ClinicResource[]
+    Practicantes : any[]// Modelar Persona y Type intermedio
+    Especialidades : Specialty[]
+}
