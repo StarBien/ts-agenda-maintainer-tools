@@ -1,7 +1,6 @@
 
-import { Branch } from "@src/models/schemas/medical/Branch/Branch";
-import { ClinicResource } from "@src/models/schemas/medical/ClinicResource/ClinicResource";
-import { Specialty } from "@src/models/schemas/medical/Specialty/Specialty";
+import { BranchDTO, SpecialtyDTO, ClinicDTO, PractitionerPersonDTO, ClinicResourceDTO,  } from "./types"
+import { InputDataShape, InputType } from "./FetchInput"
 
 /**
  * USE CASES:
@@ -19,22 +18,61 @@ import { Specialty } from "@src/models/schemas/medical/Specialty/Specialty";
  * * Remove Practitioner from a Branch          **
  * * Remove Practitioner from a Specialty       **
  * 
- * 
+ * FUTURE:
+ * * Update Specialty
+ * * Update Clinic
+ * * Update Branch
+ * * Update Clinic Resource
+ * * Update Person
+ * * Update 
 */
 
 interface GenerateSQLInterface {
-    // createBranch : () => Branch
-    // createClinicResource : () => ClinicResource
-
-    addBranchToClinic : (branch : Branch) => string 
-    addSpecialtyToBranch : (specialtyId : Specialty['snomedCode'], branchId : Branch['id']) => string
-    addSpecialtyToResource : (specialtyId : Specialty['snomedCode'], resourceId : ClinicResource['id']) => string
+    createClinic : (clinic : ClinicDTO) => string
+    createBranch :(branch : BranchDTO) => string 
+    createClinicResource : (clinicResource : ClinicResourceDTO) => string
+    createPractitioner : (practitioner : PractitionerPersonDTO) => string
+    // addBranchToClinic : (branch : BranchDTO) => string // TO REMOVE?
+    
     addResourceToBranch : (branchId : string, resourceId : string) => string
+    // addPractitionerToBranch : () => string
+    addSpecialtyToBranch : (specialtyId : SpecialtyDTO['snomedCode'], branchId : BranchDTO['id']) => string
+    addSpecialtyToResource : (specialtyId : SpecialtyDTO['snomedCode'], resourceId : ClinicResourceDTO['id']) => string
+    // addSpecialtyToPractitioner : (specialtyId : SpecialtyDTO['snomedCode'], resourceId : ClinicResourceDTO['id']) => string
 }
 
 export class GenerateSQL implements GenerateSQLInterface {
 
-    addBranchToClinic(branch : Branch) : string {
+    private Especialidades : InputType<SpecialtyDTO>[]
+    private Clinicas : InputType<ClinicDTO>[]
+    private Sedes : InputType<BranchDTO>[]
+    private Recursos : InputType<ClinicResourceDTO>[]
+    private Practicantes : InputType<PractitionerPersonDTO>[]
+
+    constructor(inputData : InputDataShape) {
+
+    }
+
+    createClinic(clinic: ClinicDTO) : string {
+
+        let template = `
+        -- ADD NEW CLINIC '${clinic.name.toUpperCase()}'
+        INSERT INTO medical.clinics
+        (id, name, has_online_booking, location_type)
+        VALUES (
+            '${clinic.id}',
+            '${clinic.name}',
+            false,
+            'AT_FACILITIES'
+        ) ON CONFLICT DO NOTHING;
+        `
+
+        return template;
+    }
+
+    createBranch(branch : BranchDTO) : string {
+
+        console.log('Creating Branch...', 'Branch: ', branch)
 
         let template = `
         -- ADD BRANCH 
@@ -42,27 +80,81 @@ export class GenerateSQL implements GenerateSQLInterface {
         (id, clinic_id, name, country, region, commune, city, street_name, street_number, rest_of_address, latitude, longitude, altitude, phone)
         VALUES 
         (
-            '${branch.getId()}',
-            '${branch.getClinicId()}',
-            '${branch.getName()}',
-            '${branch.getCountry()}',
-            '${branch.getRegion()}',
-            '${branch.getCommune()}',
-            '${branch.getCity()}',
-            '${branch.getStreetName()}',
-            ${branch.getStreetNumber()},
-            '${branch.getRestOfAddress()}',
-            ${branch.getLatitude()},
-            ${branch.getLongitude()},
-            ${branch.getAltitude()},
-            '${branch.getPhone()}'
+            '${branch.id}',
+            '${branch.clinicId}',
+            '${branch.name || 'NULL'}',
+            '${branch.country || 'NULL'}',
+            '${branch.region || 'NULL'}',
+            '${branch.commune || 'NULL'}',
+            '${branch.city || 'NULL'}',
+            '${branch.streetName || 'NULL'}',
+            ${branch.streetNumber || 'NULL'},
+            '${branch.restOfAddress || 'NULL'}',
+            ${branch.latitude || 'NULL'},
+            ${branch.longitude || 'NULL'},
+            ${branch.altitude || 0},
+            '${branch.phone || 'NULL'}'
         ) ON CONFLICT DO NOTHING;
         `
 
         return template;
     };
 
-    addResourceToBranch(branchId: string, resourceId: string) : string {
+    
+    createClinicResource(clinicResource : ClinicResourceDTO) : string {
+
+        let template = `
+        
+        `
+
+        return template;
+    }
+
+    createPractitioner(practitioner: PractitionerPersonDTO) : string {
+
+        const persons_template = `
+        -- ADD NEW PRACTITIONERS AS PERSONS
+        INSERT INTO persons.persons (
+            id,
+            firstname, lastname, mother_maiden_name,
+            birthdate,
+            country, region, commune, city, street_name, street_number, rest_of_address,
+            document_type, document_value, document_country,
+            gender, deceased, phone,
+            email
+        )
+        VALUES (
+            '0b344a82-d84a-4b0a-a841-bff674e0fa6c',
+            'Rodrigo Ignacio',
+            'Alliende', 'Ferrada',
+            NULL, 'CL', NULL, NULL, '', '', NULL, NULL,
+            'RUT', '166614376', 'CL',
+            NULL, 'false', '',
+            NULL
+        )
+        ON CONFLICT DO NOTHING;
+        `
+
+        const medics_template = `        
+        -- ADD NEW PRACTITIONERS AS MEDICS
+        INSERT INTO medical.medics (id, photo, attendance_type, location_type)
+        VALUES (
+            '0b344a82-d84a-4b0a-a841-bff674e0fa6c',
+            'https://www.starbien.life/images/generic_practitioner_icon.png.png',
+            'IN_PERSON',
+            'AT_FACILITIES'
+        )
+        ON CONFLICT DO NOTHING;` 
+
+        return persons_template + medics_template;
+    }
+
+    // ---
+
+    addResourceToBranch(
+        branchId: BranchDTO['id'], 
+        resourceId: ClinicResourceDTO['id']
+    ) : string {
 
         let template = `
         -- ADD CLINIC-RESOURCES-BRANCHES
@@ -76,7 +168,10 @@ export class GenerateSQL implements GenerateSQLInterface {
         return template;
     };
 
-    addSpecialtyToBranch(specialtyId : string, branchId : string) : string {
+    addSpecialtyToBranch(
+        specialtyId : SpecialtyDTO['snomedCode'], 
+        branchId : BranchDTO['id']
+    ) : string {
         
         const template = 
         `
@@ -93,7 +188,10 @@ export class GenerateSQL implements GenerateSQLInterface {
         return template;
     }
 
-    addSpecialtyToResource(specialtyId : string, resourceId : string) : string {
+    addSpecialtyToResource(
+        specialtyId : SpecialtyDTO['snomedCode'], 
+        resourceId : ClinicResourceDTO['id']
+    ) : string {
 
         let template = `
         -- ADD SPECIALTY TO RESOURCE

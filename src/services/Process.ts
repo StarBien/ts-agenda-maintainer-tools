@@ -1,81 +1,80 @@
-import { LocationType } from "@src/types/medical";
-import { GenerateSQL } from "./generateSQL";
-import ReadInputs, { ValidTypes } from "./ReadInputs";
-import { randomUUID } from "crypto";
 
-import { ClinicDTO, BranchDTO,  } from "./types";
+import { GenerateSQL } from "./generateSQL"
+import { inputData, inputMap, InputType } from "./FetchInput"
 
-const [maps, data] = ReadInputs;
-const genSQL = new GenerateSQL();
+import { BranchDTO, SpecialtyDTO, ClinicDTO, PractitionerPersonDTO, ClinicResourceDTO,  } from "./types"
 
 
-// Initialize UUID where missing ====================================
+// TODO Implementar ZOD o algun Schema Validator
 
-function initializeUUIDs() {
+const genSQL = new GenerateSQL(inputData)
 
-    console.log('Initializing UUIDs...')
+type ScriptType<T> = T & {
+    SCRIPT_ID : number
+}
 
+
+/** Recorrer cada mapa, y aplicar el flujo desde la Clinica al Recurso */
+
+type ProcessState = {
+    Clinics : ScriptType<ClinicDTO>[]
+}
+
+const test : ProcessState = {
+    Clinics : []
+}
+
+type ItemsTree = {
+    Clinics : Record<InputType<ClinicDTO>['SCRIPT_ID'], InputType<ClinicDTO>>
+    Branches : any
+}
+
+create()
+update()
+
+// test.Clinics[0].SCRIPT_ID
+
+function create() {
+
+    let sql = '';
+    // TODO Create a Clinic
+    inputData.Clinicas.forEach(clinica => {
+        clinica.SCRIPT_ID
+        sql += genSQL.createClinic(clinica)
     
-    const keys = Object.keys(data);
-    console.log('Data keys:', keys)
-
-    keys.forEach((key, i) => {
-        console.log('Entries: ', key)
-        
     })
-
-    Object.entries(data).forEach( x => {
-        let key = x[0]
-        let values : ValidTypes[] = x[1]
-        // console.log('Entries: ', key, values.length)
-
-        values.forEach(row  => {
-            // console.log(row as Clinic[])
-            // if(row instanceof Clinic[]) {
-            //     console.log('Working with Clinics')
-            //     // row.forEach(y => y['id'] = 'AAA-BBB-CCC')
-            // }
-            // if(row as Branch[]) {
-            //     console.log('Working with Branches')
-            //     // row.forEach(y => y['id'] = 'AAA-BBB-CCC')
-            // }
-
-            // if(row as Clinic) row['id'] = 'AAA-BBB-CCC' //randomUUID()
-            // if(row instanceof Branch) row['id'] = 'AAA-BBB-CCC' //randomUUID()
-        })
-
-
-        console.log('DEBUG - With UUID: ', values[0])
-
-    });
     
+    inputData.Sedes.forEach(sede => {
+        sql += genSQL.createBranch(sede)
+    })
     
-    console.log('Finished initializing UUIDs...')
-}
-
-initializeUUIDs()
-
-// Create new Clinics ===============================================
-
-function createNewClinics() {
-    console.log('Creating new Clinics')
+    inputMap.Sedes
+    
+    console.log(sql)
 
 }
 
-createNewClinics()
+// TODO Create Clinic Branch
+/** 
+ * La idea es que busque que SCRIPT_ID se asigno a una Clinica y su sede
+ * y se cree un UUID si la Clinica no lo tiene, 
+ * sino se le asigne el que corresponda
+ * */
 
-// Create new Branches
+// console.log(inputData['Sedes'][0])
+// console.log(genSQL.createBranch(inputData.Sedes[0]))
 
-// Create new Specialties
-
-// Create new Clinic Resources
-
-// Create new Practitioners + Person
-
-// Link elements
-// - Specialties to: Resource/Practitioner
-// - Branch to: Resource/Practitioner/Specialty
-
-// Output ===========================================================
+// TODO Link Resource to Branch
 
 
+inputData.Sedes.forEach(sede => {
+    // console.log(genSQL.addResourceToBranch(sede.id, 'CR111'))
+})
+
+// ------------------------------------------------------------------
+// UPDATE DB ========================================================
+// ------------------------------------------------------------------
+
+function update() {
+    return 
+}
