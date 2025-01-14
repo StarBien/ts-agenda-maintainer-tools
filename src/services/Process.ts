@@ -1,6 +1,9 @@
+import { LocationType } from "@src/types/medical";
 import { GenerateSQL } from "./generateSQL";
-import ReadInputs from "./ReadInputs";
+import ReadInputs, { ValidTypes } from "./ReadInputs";
+import { randomUUID } from "crypto";
 
+import { ClinicDTO, BranchDTO,  } from "./types";
 
 const [maps, data] = ReadInputs;
 const genSQL = new GenerateSQL();
@@ -12,25 +15,39 @@ function initializeUUIDs() {
 
     console.log('Initializing UUIDs...')
 
-    console.log('Data keys:', Object.keys(data))
-
     
+    const keys = Object.keys(data);
+    console.log('Data keys:', keys)
 
-    
-
-    for(const key of Object.keys(data)) {
-        if (Object.prototype.hasOwnProperty.call(data, key)) {
-            // console.log(`Items in ${key}: ${data[key]}`)
-        }
+    keys.forEach((key, i) => {
+        console.log('Entries: ', key)
         
-    }
+    })
 
-    // console.log('Keys? : ', data[0])
-    
-    [
-        ['Clinicas', []],
-        ['']
-    ]
+    Object.entries(data).forEach( x => {
+        let key = x[0]
+        let values : ValidTypes[] = x[1]
+        // console.log('Entries: ', key, values.length)
+
+        values.forEach(row  => {
+            // console.log(row as Clinic[])
+            // if(row instanceof Clinic[]) {
+            //     console.log('Working with Clinics')
+            //     // row.forEach(y => y['id'] = 'AAA-BBB-CCC')
+            // }
+            // if(row as Branch[]) {
+            //     console.log('Working with Branches')
+            //     // row.forEach(y => y['id'] = 'AAA-BBB-CCC')
+            // }
+
+            // if(row as Clinic) row['id'] = 'AAA-BBB-CCC' //randomUUID()
+            // if(row instanceof Branch) row['id'] = 'AAA-BBB-CCC' //randomUUID()
+        })
+
+
+        console.log('DEBUG - With UUID: ', values[0])
+
+    });
     
     
     console.log('Finished initializing UUIDs...')

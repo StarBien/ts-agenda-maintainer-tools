@@ -7,7 +7,7 @@ interface ClinicInterface {
     getLocationType : () => LocationType
 }
 
-export default class Clinic implements ClinicInterface {
+export class Clinic implements ClinicInterface {
     private readonly id : string
     private readonly name : string
     private readonly hasOnlineBooking : boolean
