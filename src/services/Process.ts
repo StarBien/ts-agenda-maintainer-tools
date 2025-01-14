@@ -1,5 +1,5 @@
 
-import { GenerateSQL } from "./generateSQL"
+import { GenerateSQL } from "./GenerateSQL"
 import { inputData, inputMap, InputType } from "./FetchInput"
 
 import { BranchDTO, SpecialtyDTO, ClinicDTO, PractitionerPersonDTO, ClinicResourceDTO,  } from "./types"

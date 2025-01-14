@@ -1,6 +1,6 @@
 import express, { Request, Response } from "express";
 
-import { GenerateSQL } from "./services/generateSQL";
+import { GenerateSQL } from "./services/GenerateSQL";
 
 const app = express();
 

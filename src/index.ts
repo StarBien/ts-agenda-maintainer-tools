@@ -3,7 +3,7 @@ import * as fs from 'node:fs';
 import { Branch } from "./models/schemas/medical/Branch/Branch";
 import { BranchBuilder } from "./models/schemas/medical/Branch/BranchBuilder";
 import { ClinicResourceBuilder } from "./models/schemas/medical/ClinicResource/ClinicResourceBuilder";
-import { GenerateSQL } from "./services/generateSQL"
+import { GenerateSQL } from "./services/GenerateSQL"
 
 console.log('Agenda Automation')
 console.log('Principalmente tareas de mantenimiento')
