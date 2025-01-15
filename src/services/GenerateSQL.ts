@@ -35,7 +35,7 @@ interface GenerateSQLInterface {
     // addBranchToClinic : (branch : BranchDTO) => string // TO REMOVE?
     
     addResourceToBranch : (branchId : string, resourceId : string) => string
-    // addPractitionerToBranch : () => string
+    addPractitionerToBranch : (branchId : BranchDTO['id'], practitionerId : PractitionerPersonDTO['id']) => string
     addSpecialtyToBranch : (specialtyId : SpecialtyDTO['snomedCode'], branchId : BranchDTO['id']) => string
     addSpecialtyToResource : (specialtyId : SpecialtyDTO['snomedCode'], resourceId : ClinicResourceDTO['id']) => string
     // addSpecialtyToPractitioner : (specialtyId : SpecialtyDTO['snomedCode'], resourceId : ClinicResourceDTO['id']) => string
@@ -49,7 +49,7 @@ export class GenerateSQL implements GenerateSQLInterface {
     private Recursos : InputType<ClinicResourceDTO>[]
     private Practicantes : InputType<PractitionerPersonDTO>[]
 
-    constructor(inputData : InputDataShape) {
+    constructor(inputData? : InputDataShape) {
 
     }
 
@@ -72,7 +72,7 @@ export class GenerateSQL implements GenerateSQLInterface {
 
     createBranch(branch : BranchDTO) : string {
 
-        console.log('Creating Branch...', 'Branch: ', branch)
+        // console.log('DEBUG - Creating Branch...', 'Branch: ', branch)
 
         let template = `
         -- ADD BRANCH 
@@ -187,6 +187,25 @@ export class GenerateSQL implements GenerateSQLInterface {
         
         return template;
     }
+
+    addPractitionerToBranch(
+        branchId : BranchDTO['id'], 
+        practitionerId : PractitionerPersonDTO['id']
+    ) : string {
+
+        const template = `
+        -- ASSOCIATE PRACTITIONERS TO BRANCHES
+        INSERT INTO medical.medics_branches (branch_id, medic_id)
+        VALUES (
+            '${branchId}',
+            '${practitionerId}'
+        )
+        ON CONFLICT DO NOTHING;
+        `
+
+        return template;
+    }
+
 
     addSpecialtyToResource(
         specialtyId : SpecialtyDTO['snomedCode'], 
