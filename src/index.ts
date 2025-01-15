@@ -3,7 +3,8 @@ import * as fs from 'node:fs';
 import { Branch } from "./models/schemas/medical/Branch/Branch";
 import { BranchBuilder } from "./models/schemas/medical/Branch/BranchBuilder";
 import { ClinicResourceBuilder } from "./models/schemas/medical/ClinicResource/ClinicResourceBuilder";
-import { GenerateSQL } from "./services/GenerateSQL"
+// import { GenerateSQL } from "./services/GenerateSQL"
+import { GenerateSQL } from './services/GenerateSQL';
 
 console.log('Agenda Automation')
 console.log('Principalmente tareas de mantenimiento')
@@ -57,7 +58,7 @@ branches[0].resources.push(resources[2])
 let output = '';
 
 branches.forEach(branch => {
-    output += genSQL.addBranchToClinic(branch)
+    output += genSQL.createBranch(branch)
 
     branch.resources.forEach(r => {
         output += genSQL.addResourceToBranch(branch.getId(), r.getId())
