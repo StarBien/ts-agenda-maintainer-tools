@@ -184,9 +184,6 @@ const inputData : InputDataShape = {
     Recursos: data['Recursos'] as InputType<ClinicResourceDTO>[]
 };
 
-// console.log(inputData);
-
-
 // Create an array to store the counts for each key
 const counts = Object.keys(data).map(key => ({
     Hoja: key,
@@ -199,10 +196,8 @@ console.table(counts);
 // =========== MAPS
 
 console.log('Mapas:\n', inputMap)
-// console.table(inputMap)
+
 console.table(inputMap.Sedes)
 console.table(inputMap.Especialidades)
-// console.table(inputMap)
-
 
 export {inputMap, inputData}

@@ -4,7 +4,7 @@ import { inputData, inputMap, InputType } from "./FetchInput"
 
 import { BranchDTO, SpecialtyDTO, ClinicDTO, PractitionerPersonDTO, ClinicResourceDTO,  } from "./types"
 
-import { consolidateInsertStatements } from "../utils/consolidate-sql-statements"
+import { consolidateInsertStatements } from "@utils/consolidate-sql-statements"
 
 
 // TODO Implementar ZOD o algun Schema Validator
