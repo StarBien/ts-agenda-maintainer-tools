@@ -1,14 +1,15 @@
 {
   "name": "agenda-automation",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Herramientas de automatización para tareas de mantenimiento",
   "main": "main.js",
   "scripts": {
     "build": "tsc",
-    "dev": "node --env-file=.env --watch -r tsconfig-paths/register -r ts-node/register src/index.ts",
+    "dev": "node --env-file=.env --watch -r tsconfig-paths/register -r ts-node/register src/services/Process.ts",
     "test": "echo \"Error: no test specified\" && exit 1",
     "start:genSQL": "node ./utils/CLINI/generate-sql-files.ts",
-    "new-branches": "node ./utils/CLINI/new_branches.js"
+    "new-branches": "node ./utils/CLINI/new_branches.js",
+    "process-excel-input": "node --env-file=.env --watch -r tsconfig-paths/register -r ts-node/register src/services/Process.ts"
   },
   "author": "Guido Castrogiovanni",
   "license": "ISC",

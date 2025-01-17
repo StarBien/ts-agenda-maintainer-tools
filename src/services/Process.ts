@@ -1,4 +1,5 @@
 
+import fs from 'fs';
 import { GenerateSQL } from "./GenerateSQL"
 import { inputData, inputMap, InputType } from "./FetchInput"
 
@@ -126,7 +127,12 @@ function create() {
     })
 
     
-    console.log(consolidateInsertStatements([sql]).join('\n\n'))
+    const result = consolidateInsertStatements([sql]).join('\n\n');
+    const outputFilePath = "./output/example.sql";
+
+    console.log(result)
+    console.log('\n\nWritting output into: ', outputFilePath)
+    fs.writeFileSync(outputFilePath, result);    
 
 }
 
