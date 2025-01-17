@@ -4,6 +4,11 @@ import * as XLSX from 'xlsx'
 import { BranchDTO, ClinicDTO, ClinicResourceDTO, PractitionerPersonDTO, SpecialtyDTO } from "./types";
 import { randomUUID } from "crypto";
 
+import { z } from "zod";
+import { BranchDTO_Schema, ClinicDTO_Schema, ClinicResourceDTO_Schema, PractitionerPersonDTO_Schema, withScriptId } from "@src/schemas/medical";
+import { BranchKeyMap, mapKeys, normalizeData } from "./InputMapper";
+import { transcode } from "buffer";
+
 
 const EXCEL_FILE = 'inputs/Agenda Mantainer.xlsx';
 
@@ -43,11 +48,33 @@ const defaultSheetConfig =     {
     defval:"",
 }
 
-const sheetsConfig : (XLSX.Sheet2JSONOpts & {name: string})[]  = [
+const sheetsConfig : (XLSX.Sheet2JSONOpts & {name: string, schema?: z.ZodObject<any>})[]  = [
     defaultSheetConfig,
     {
+        ...defaultSheetConfig,
+        name: 'Especialidades',
+        schema: withScriptId(ClinicDTO_Schema)
+    },
+    {
+        ...defaultSheetConfig,
+        name: 'Clinicas',
+        schema: withScriptId(ClinicDTO_Schema)
+    },
+    {
+        ...defaultSheetConfig,
+        name: 'Sedes',
+        schema: withScriptId(BranchDTO_Schema)
+    },
+    {
+        ...defaultSheetConfig,
         name: 'Practicantes',
         range: 1,
+        schema: withScriptId(PractitionerPersonDTO_Schema)
+    },
+    {
+        ...defaultSheetConfig,
+        name: 'Recursos',
+        schema: withScriptId(ClinicResourceDTO_Schema)
     },
     {
         ...defaultSheetConfig,
@@ -121,9 +148,9 @@ function readMapData() : MapShape {
     return maps;
 }
 
-function readInputData() : Record<string, ValidTypes[]> {
+function readInputData() : Record<string, any[]> {
 
-    const data : Record<string, ValidTypes[]> = {}
+    const data : Record<string, any[]> = {}
 
     Object.values(workbook.Sheets).forEach((sheet, i) => {
 
@@ -136,11 +163,22 @@ function readInputData() : Record<string, ValidTypes[]> {
             sheetsConfig.find(x => x.name == sheetName) ?? sheetsConfig[0]
         
         let json = XLSX.utils.sheet_to_json<InputType<ValidTypes>>(sheet, sheetConfig)
-    
+
         // Remove un-assigned rows
-        const clean = json.filter(row => Object.values(row).slice(1).join("") !== "")
+        let clean = json.filter(row => Object.values(row).slice(1).join("") !== "")
+
+        if(sheetConfig.schema) {
+            console.log('-- Validating schema for Sheet: ', sheetName)
+            const [translated, success] = normalizeData(clean, sheetConfig.schema)
+
+            console.log('--- Successfully parsed? ', success)
+                // , '\n', translated[0])
+
+            if(success) data[sheetName] = translated
+        } else {
+            data[sheetName] = clean
+        }    
     
-        data[sheetName] = clean
     })
 
     // Initialize UUIDs for each item in the sheets (where needed)
