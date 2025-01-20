@@ -1,162 +1,185 @@
+import fs from "fs";
+import { GenerateSQL } from "./GenerateSQL";
+import { inputData, inputMap, InputType } from "./FetchInput";
 
-import fs from 'fs';
-import { GenerateSQL } from "./GenerateSQL"
-import { inputData, inputMap, InputType } from "./FetchInput"
+import { ClinicDTO } from "@src/schemas/medical";
 
-import { BranchDTO, SpecialtyDTO, ClinicDTO, PractitionerPersonDTO, ClinicResourceDTO,  } from "./types"
+import { consolidateInsertStatements } from "@utils/consolidate-sql-statements";
 
-import { consolidateInsertStatements } from "@utils/consolidate-sql-statements"
-
-
-// TODO Implementar ZOD o algun Schema Validator
-
-const genSQL = new GenerateSQL(inputData)
+const genSQL = new GenerateSQL(inputData);
 
 type ScriptType<T> = T & {
-    SCRIPT_ID : number
-}
-
+   SCRIPT_ID: number;
+};
 
 /** Recorrer cada mapa, y aplicar el flujo desde la Clinica al Recurso */
 
 type ProcessState = {
-    Clinics : ScriptType<ClinicDTO>[]
-}
+   Clinics: ScriptType<ClinicDTO>[];
+};
 
-const test : ProcessState = {
-    Clinics : []
-}
+const test: ProcessState = {
+   Clinics: [],
+};
 
 type ItemsTree = {
-    Clinics : Record<InputType<ClinicDTO>['SCRIPT_ID'], InputType<ClinicDTO>>
-    Branches : any
-}
+   Clinics: Record<InputType<ClinicDTO>["SCRIPT_ID"], InputType<ClinicDTO>>;
+   Branches: any;
+};
 
-create()
-update()
-
-// test.Clinics[0].SCRIPT_ID
+create();
+update();
 
 function create() {
+   let sql = "";
 
-    let sql = '';
-    // TODO Create a Clinic
-    inputData.Clinicas.forEach(clinica => {
-        clinica.SCRIPT_ID
-        sql += genSQL.createClinic(clinica)
-    
-    })
-    
-    inputData.Sedes.forEach(sede => {
-        sql += genSQL.createBranch(sede)
-    })
-    
-    // console.log('inputData.Sedes: ', inputMap.Sedes)
+   // Create Specialties
+   inputData.Especialidades.forEach((especialidad) => {
+      // TODO Create Specialties
+      sql += genSQL.createSpecialty(especialidad);
+   });
 
-    // Run Sedes Map
-    Object.entries(inputMap.Sedes).forEach(kvp => {
-        const sedeScriptId = kvp[0]
-        const {Practicantes, Recursos} = kvp[1]
+   // Create Clinics
+   inputData.Clinicas.forEach((clinica) => {
+      //   clinica.SCRIPT_ID
+      sql += genSQL.createClinic(clinica);
+   });
 
-        const sede = inputData.Sedes.find(x => x.SCRIPT_ID.toString() == sedeScriptId)
-        if(sede == undefined) return
-        
-        // Link Practitioners to Branches
-        Practicantes.toString().split(';').forEach(scriptId => {
+   // Create Branches
+   inputData.Sedes.forEach((sede) => {
+      // TODO Link Branch to Clinic
+      // Si una sede fue vinculada a una clinica por crear, se recupera el SCRIPT_ID correspondiente a la nueva clinica
+      let matchClinicScriptId = /C(\d+)/.exec(sede.clinicId);
 
-            if(scriptId == '') return   // Empty cell
+      const clinicId: string = matchClinicScriptId
+         ? inputData.Clinicas.find((c) => c.SCRIPT_ID == Number(matchClinicScriptId[1]))?.id ?? ""
+         : sede.clinicId;
 
-            const practicante = inputData.Practicantes.find(x => x.SCRIPT_ID.toString() == scriptId)
-            if(practicante == undefined) throw new Error(`[Sedes Map] - No se encontró el practicante con Script ID '${scriptId}'`)
+      sede.clinicId = clinicId;
 
-            sql += genSQL.addPractitionerToBranch(sede.id, practicante.id)
+      sql += genSQL.createBranch(sede);
+   });
 
-        })
-        
-        // Link Resources to Branches
-        Recursos.toString().split(';').forEach(scriptId => {
+   // Create Practitioners (Table persons + medics)
+   inputData.Practicantes.forEach((practitioner) => {
+      sql += genSQL.createPractitioner(practitioner);
+   });
 
-            if(scriptId == '') return   // Empty cell
-            
-            const recurso = inputData.Recursos.find(x => x.SCRIPT_ID.toString() == scriptId)
-            if(recurso == undefined) throw new Error(`[Sedes Map] - No se encontró el recurso con Script ID '${scriptId}'`)
+   inputData.Recursos.forEach((resource) => {
+      sql += genSQL.createClinicResource(resource);
+   });
 
-            sql += genSQL.addResourceToBranch(sede.id, recurso.id)
+   // Run Sedes Map
+   Object.entries(inputMap.Sedes).forEach((kvp) => {
+      const sedeScriptId = kvp[0];
+      const { Practicantes, Recursos } = kvp[1];
 
-        })
-    })
+      const sede = inputData.Sedes.find((x) => x.SCRIPT_ID.toString() == sedeScriptId);
+      if (sede == undefined) return;
 
+      // Link Practitioners to Branches
+      Practicantes.toString()
+         .split(";")
+         .forEach((scriptId) => {
+            if (scriptId == "") return; // Empty cell
 
-    // Run Especialidades Map
-    Object.entries(inputMap.Especialidades).forEach(kvp => {
-        const especialidadScriptId = kvp[0]
-        const {Sedes, Recursos, Practicantes} = kvp[1]
+            const practicante = inputData.Practicantes.find(
+               (x) => x.SCRIPT_ID.toString() == scriptId
+            );
+            if (practicante == undefined)
+               throw new Error(
+                  `[Sedes Map] - No se encontró el practicante con Script ID '${scriptId}'`
+               );
 
-        const especialidad = inputData.Especialidades.find(x => x.SCRIPT_ID.toString() == especialidadScriptId)
-        if(especialidad == undefined) return
+            sql += genSQL.addPractitionerToBranch(sede.id, practicante.id);
+         });
 
-        Sedes.toString().split(';').forEach(scriptId => {
-            if(scriptId == '') return   // Empty cell
-            
-            const sede = inputData.Sedes.find(x => x.SCRIPT_ID.toString() === scriptId)
-            if(sede == undefined) throw new Error(`[Especialidades Map] - No se encontró el sede con Script ID '${scriptId}'`)
-            
-            sql += genSQL.addSpecialtyToBranch(especialidad.snomedCode, sede.id)
+      // Link Resources to Branches
+      Recursos.toString()
+         .split(";")
+         .forEach((scriptId) => {
+            if (scriptId == "") return; // Empty cell
 
-        })
+            const recurso = inputData.Recursos.find((x) => x.SCRIPT_ID.toString() == scriptId);
+            if (recurso == undefined)
+               throw new Error(
+                  `[Sedes Map] - No se encontró el recurso con Script ID '${scriptId}'`
+               );
 
-        Recursos.toString().split(';').forEach(scriptId => {
-            if(scriptId == '') return   // Empty cell
-            
-            const sede = inputData.Sedes.find(x => x.SCRIPT_ID.toString() === scriptId)
-            if(sede == undefined) throw new Error(`[Especialidades Map] - No se encontró la sede con Script ID '${scriptId}'`)
-            
-            sql += genSQL.addSpecialtyToBranch(especialidad.snomedCode, sede.id)
+            sql += genSQL.addResourceToBranch(sede.id, recurso.id);
+         });
+   });
 
-        })
+   // Run Especialidades Map
+   Object.entries(inputMap.Especialidades).forEach((kvp) => {
+      const especialidadScriptId = kvp[0];
+      const { Sedes, Recursos, Practicantes } = kvp[1];
 
-        Practicantes.toString().split(';').forEach(scriptId => {
-            if(scriptId == '') return   // Empty cell
-            
-            const sede = inputData.Sedes.find(x => x.SCRIPT_ID.toString() === scriptId)
-            if(sede == undefined) throw new Error(`[Especialidades Map] - No se encontró el practicante con Script ID '${scriptId}'`)
-            
-            sql += genSQL.addSpecialtyToBranch(especialidad.snomedCode, sede.id)
+      const especialidad = inputData.Especialidades.find(
+         (x) => x.SCRIPT_ID.toString() == especialidadScriptId
+      );
+      if (especialidad == undefined) return;
 
-        })
-    })
+      Sedes.toString()
+         .split(";")
+         .forEach((scriptId) => {
+            if (scriptId == "") return; // Empty cell
 
-    
-    const result = consolidateInsertStatements([sql]).join('\n\n');
-    const outputFilePath = "./output/example.sql";
+            const sede = inputData.Sedes.find((x) => x.SCRIPT_ID.toString() === scriptId);
+            if (sede == undefined)
+               throw new Error(
+                  `[Especialidades Map] - No se encontró el sede con Script ID '${scriptId}'`
+               );
 
-    console.log(result)
-    console.log('\n\nWritting output into: ', outputFilePath)
-    fs.writeFileSync(outputFilePath, result);    
+            sql += genSQL.addSpecialtyToBranch(especialidad.snomedCode, sede.id);
+         });
 
+      Recursos.toString()
+         .split(";")
+         .forEach((scriptId) => {
+            if (scriptId == "") return; // Empty cell
+
+            const sede = inputData.Sedes.find((x) => x.SCRIPT_ID.toString() === scriptId);
+            if (sede == undefined)
+               throw new Error(
+                  `[Especialidades Map] - No se encontró la sede con Script ID '${scriptId}'`
+               );
+
+            sql += genSQL.addSpecialtyToBranch(especialidad.snomedCode, sede.id);
+         });
+
+      Practicantes.toString()
+         .split(";")
+         .forEach((scriptId) => {
+            if (scriptId == "") return; // Empty cell
+
+            const sede = inputData.Sedes.find((x) => x.SCRIPT_ID.toString() === scriptId);
+            if (sede == undefined)
+               throw new Error(
+                  `[Especialidades Map] - No se encontró el practicante con Script ID '${scriptId}'`
+               );
+
+            sql += genSQL.addSpecialtyToBranch(especialidad.snomedCode, sede.id);
+         });
+   });
+
+   const result = consolidateInsertStatements([sql]).join("\n\n");
+   const outputFilePath = "./output/example.sql";
+
+   function healNulls(string: string) {
+      return string.replace("'NULL'", "NULL");
+      // return string;
+   }
+
+   console.log(healNulls(result));
+   console.log("\n\nWritting output into: ", outputFilePath);
+   fs.writeFileSync(outputFilePath, result);
 }
-
-// TODO Create Clinic Branch
-/** 
- * La idea es que busque que SCRIPT_ID se asigno a una Clinica y su sede
- * y se cree un UUID si la Clinica no lo tiene, 
- * sino se le asigne el que corresponda
- * */
-
-// console.log(inputData['Sedes'][0])
-// console.log(genSQL.createBranch(inputData.Sedes[0]))
-
-// TODO Link Resource to Branch
-
-
-inputData.Sedes.forEach(sede => {
-    // console.log(genSQL.addResourceToBranch(sede.id, 'CR111'))
-})
 
 // ------------------------------------------------------------------
 // UPDATE DB ========================================================
 // ------------------------------------------------------------------
 
 function update() {
-    return 
+   return;
 }
