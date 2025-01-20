@@ -1,5 +1,6 @@
 import { z } from "zod"
 import { BranchDTO, SpecialtyDTO, ClinicDTO, PractitionerPersonDTO, ClinicResourceDTO,  } from "./types"
+import { sqlEscapeSingleQuotes } from "@src/utils/sql-escape-single-quotes";
 
 // Type for normalization configuration
 type NormalizationConfig = {
@@ -12,20 +13,20 @@ type NormalizationConfig = {
 	const config: NormalizationConfig = {};
   
 	for (const key in shape) {
-	  const field = shape[key];
-	  if (field instanceof z.ZodString) {
-		config[key] = "string";
-	  } else if (field instanceof z.ZodNumber) {
-		config[key] = "number";
-	  } else if (field instanceof z.ZodDate) {
-		config[key] = "date";
-	  } else {
-		config[key] = "unknown"; // Default for unsupported types
-	  }
+		const field = shape[key];
+		if (field instanceof z.ZodString) {
+			config[key] = "string";
+		} else if (field instanceof z.ZodNumber) {
+			config[key] = "number";
+		} else if (field instanceof z.ZodDate) {
+			config[key] = "date";
+		} else {
+			config[key] = "unknown"; // Default for unsupported types
+		}
 	}
   
 	return config;
-  }
+}
 
 // Function to normalize data based on the configuration
 export function normalizeData(
@@ -43,33 +44,33 @@ export function normalizeData(
 		row = mapKeys(row, keyMap)
 
 		for (const key in row) {
-		if (config[key]) {
-			switch (config[key]) {
-			case "string":
-				normalizedRow[key] = row[key]?.toString() ?? "";
-				break;
-			case "number":
-				normalizedRow[key] = !isNaN(Number(row[key])) ? Number(row[key]) : null;
-				break;
-			case "date":
-				normalizedRow[key] = new Date(row[key]);
-				if (isNaN(normalizedRow[key].getTime())) {
-				normalizedRow[key] = null; // Invalid dates become null
+			if (config[key]) {
+				switch (config[key]) {
+					case "string":
+						normalizedRow[key] = sqlEscapeSingleQuotes(row[key]?.toString()) ?? "";
+						break;
+					case "number":
+						normalizedRow[key] = !isNaN(Number(row[key])) ? Number(row[key]) : null;
+						break;
+					case "date":
+						normalizedRow[key] = new Date(row[key]);
+						if (isNaN(normalizedRow[key].getTime())) {
+						normalizedRow[key] = null; // Invalid dates become null
+						}
+						break;
+					default:
+						normalizedRow[key] = row[key]; // Preserve original value for unknown types
 				}
-				break;
-			default:
-				normalizedRow[key] = row[key]; // Preserve original value for unknown types
+			} else {
+				normalizedRow[key] = row[key]; // Preserve values for fields not in config
 			}
-		} else {
-			normalizedRow[key] = row[key]; // Preserve values for fields not in config
-		}
 		}
 		return normalizedRow;
   });
 
 	const success = translated.every(row => schema.safeParse(row))
 
-  	return [translated, success]
+	return [translated, success]
 }
 
 
@@ -91,13 +92,13 @@ function snakeToCamel(snake: string): string {
   
   // Function to create the keyMap
   export function createKeyMap<T extends Record<string, any>>(data: T): Record<string, string> {
-	const keyMap: Record<string, string> = {};
-	for (const key of Object.keys(data)) {
-	  if (/_/.test(key)) {
-		keyMap[key] = snakeToCamel(key);
-	  }
-	}
-	return keyMap;
+		const keyMap: Record<string, string> = {};
+		for (const key of Object.keys(data)) {
+			if (/_/.test(key)) {
+			keyMap[key] = snakeToCamel(key);
+			}
+		}
+		return keyMap;
   }
 
 export const BranchKeyMap = {
