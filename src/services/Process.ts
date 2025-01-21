@@ -65,6 +65,7 @@ function create() {
       sql += genSQL.createPractitioner(practitioner);
    });
 
+   // Create Resources
    inputData.Recursos.forEach((resource) => {
       sql += genSQL.createClinicResource(resource);
    });
@@ -166,12 +167,6 @@ function create() {
    const result = consolidateInsertStatements([sql]).join("\n\n");
    const outputFilePath = "./output/example.sql";
 
-   function healNulls(string: string) {
-      return string.replace("'NULL'", "NULL");
-      // return string;
-   }
-
-   console.log(healNulls(result));
    console.log("\n\nWritting output into: ", outputFilePath);
    fs.writeFileSync(outputFilePath, result);
 }
