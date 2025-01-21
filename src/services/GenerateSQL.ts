@@ -119,8 +119,8 @@ export class GenerateSQL implements GenerateSQLInterface {
             '${branch.streetName || "NULL"}',
             ${branch.streetNumber || "NULL"},
             '${branch.restOfAddress || "NULL"}',
-            ${branch.latitude || "NULL"},
-            ${branch.longitude || "NULL"},
+            ${branch.latitude},
+            ${branch.longitude},
             ${branch.altitude || 0},
             '${branch.phone || "NULL"}'
         ) ON CONFLICT DO NOTHING;
@@ -250,7 +250,7 @@ export class GenerateSQL implements GenerateSQLInterface {
       let template = `
         -- ADD SPECIALTY TO RESOURCE
         INSERT INTO medical.clinic_resources_specialties (specialty_id, resource_id)
-        VALUES(
+        VALUES (
             '${specialtyId}',
             '${resourceId}'
         ) ON CONFLICT DO NOTHING;
@@ -261,6 +261,5 @@ export class GenerateSQL implements GenerateSQLInterface {
 }
 
 function healNulls(string: string) {
-   // return string.replace("'NULL'", "NULL");
-   return string;
+   return string.replace(/'NULL'/gm, "NULL");
 }
