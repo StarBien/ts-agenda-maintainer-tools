@@ -172,6 +172,8 @@ function readInputData(): Record<string, any[]> {
       // Remove un-assigned rows
       let clean = json.filter((row) => Object.values(row).slice(1).join("") !== "");
 
+      if (clean.length == 0) return (data[sheetName] = []);
+
       if (sheetConfig.schema) {
          console.log("-- Validating schema for Sheet: ", sheetName);
          const [translated, success] = normalizeData(clean, sheetConfig.schema);
