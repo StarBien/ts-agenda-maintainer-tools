@@ -1,37 +1,31 @@
 {
-    "37f3867d-89c2-4401-a3f5-a379325f77c4" : {
-        "starbienId": "37f3867d-89c2-4401-a3f5-a379325f77c4",
-        "name": "TM | CHILLAN",
-        "cliniId": 17
-    },
-    "e3242924-1258-4555-92e3-411e87439eea" : {
-        "starbienId": "e3242924-1258-4555-92e3-411e87439eea",
-        "name": "CENTRO DE SALUD | SALVADOR - PROVIDENCIA",
-        "cliniId": 50
-    },
-    "05f8f093-0589-49c8-aef7-1f2bec6c0e40" : {
-        "starbienId": "05f8f093-0589-49c8-aef7-1f2bec6c0e40",
-        "name": "CENTRO DE SALUD | ALAMEDA - METRO MONEDA",
-        "cliniId": 51
-    },
-    "fa05ee13-70c4-48ac-967d-be85aaf8974d" : {
-        "starbienId": "fa05ee13-70c4-48ac-967d-be85aaf8974d",
-        "name": "CENTRO DE SALUD | LA FLORIDA",
-        "cliniId": 52
-    },
-    "12828101-b806-47be-bfb8-47c631edb119" : {
-        "starbienId": "12828101-b806-47be-bfb8-47c631edb119",
-        "name": "CENTRO DE SALUD | MAIPU",
-        "cliniId": 53
-    },
-    "448cf656-8750-4017-af9e-a39f4694ea90" : {
-        "starbienId": "448cf656-8750-4017-af9e-a39f4694ea90",
-        "name": "CENTRO DE SALUD | SAN MIGUEL",
-        "cliniId": 54
-    },
-    "7f9cfd43-376c-47d9-8d4c-a646dc11ce7e" : {
-        "starbienId": "7f9cfd43-376c-47d9-8d4c-a646dc11ce7e",
-        "name": "CENTRO DE SALUD | INDEPENDENCIA - HIPODROMO",
-        "cliniId": 55
-    }
-    }
+"e8268c48-a34b-44af-b07a-f6c4b875c6ae" : {
+    "starbienId": "e8268c48-a34b-44af-b07a-f6c4b875c6ae",
+    "name": "CENTRO DE SALUD | SALVADOR - PROVIDENCIA",
+    "cliniId": 50
+},
+"8efb525a-c1f4-48d0-9ced-0f94f69f5ace" : {
+    "starbienId": "8efb525a-c1f4-48d0-9ced-0f94f69f5ace",
+    "name": "CENTRO DE SALUD | ALAMEDA - METRO MONEDA",
+    "cliniId": 51
+},
+"fa0db95f-f7a1-419f-9f9e-634a585c187f" : {
+    "starbienId": "fa0db95f-f7a1-419f-9f9e-634a585c187f",
+    "name": "CENTRO DE SALUD | LA FLORIDA",
+    "cliniId": 52
+},
+"4bbb48bf-60f4-457f-aaa3-c88bb3f2836c" : {
+    "starbienId": "4bbb48bf-60f4-457f-aaa3-c88bb3f2836c",
+    "name": "CENTRO DE SALUD | MAIPU",
+    "cliniId": 53
+},
+"a028a540-2805-411b-919a-fb6575a01fd9" : {
+    "starbienId": "a028a540-2805-411b-919a-fb6575a01fd9",
+    "name": "CENTRO DE SALUD | SAN MIGUEL",
+    "cliniId": 54
+},
+"07a9d915-93fd-48e7-b3d3-4f89da83bc25" : {
+    "starbienId": "07a9d915-93fd-48e7-b3d3-4f89da83bc25",
+    "name": "CENTRO DE SALUD | INDEPENDENCIA - HIPODROMO",
+    "cliniId": 55
+}}
