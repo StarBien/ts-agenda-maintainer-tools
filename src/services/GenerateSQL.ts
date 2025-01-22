@@ -52,7 +52,10 @@ interface GenerateSQLInterface {
       specialtyId: SpecialtyDTO["snomedCode"],
       resourceId: ClinicResourceDTO["id"]
    ) => string;
-   // addSpecialtyToPractitioner : (specialtyId : SpecialtyDTO['snomedCode'], resourceId : ClinicResourceDTO['id']) => string
+   addSpecialtyToPractitioner: (
+      specialtyId: SpecialtyDTO["snomedCode"],
+      practitionerId: PractitionerPersonDTO["id"]
+   ) => string;
 }
 
 export class GenerateSQL implements GenerateSQLInterface {
@@ -146,8 +149,9 @@ export class GenerateSQL implements GenerateSQLInterface {
 				'${clinicResource.documentType || "NULL"}',
 				'${clinicResource.documentValue || "NULL"}',
 				'${clinicResource.documentCountry || "NULL"}',
-				'${clinicResource.photo || "NULL"}',
+				'${clinicResource.photo || "NULL"}'
 			)
+      ON CONFLICT DO NOTHING;
 		`;
 
       return healNulls(template);
@@ -222,6 +226,24 @@ export class GenerateSQL implements GenerateSQLInterface {
             '${specialtyId}'
         ) ON CONFLICT DO NOTHING;
         `;
+
+      return healNulls(template);
+   }
+
+   addSpecialtyToPractitioner(
+      specialtyId: SpecialtyDTO["snomedCode"],
+      practitionerId: PractitionerPersonDTO["id"]
+   ): string {
+      const template = `
+         -- ASSOCIATE PRACTITIONERS TO SPECIALTIES
+         INSERT INTO medical.specialties_medics (medic_id, specialty_id)
+         VALUES
+         (
+            '${practitionerId}',
+            '${specialtyId}'
+         )
+         ON CONFLICT DO NOTHING;
+      `;
 
       return healNulls(template);
    }
