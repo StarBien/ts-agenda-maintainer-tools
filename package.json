@@ -1,6 +1,6 @@
 {
   "name": "agenda-automation",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Herramientas de automatización para tareas de mantenimiento",
   "main": "main.js",
   "scripts": {
@@ -14,11 +14,7 @@
   "author": "Guido Castrogiovanni",
   "license": "ISC",
   "dependencies": {
-    "@types/convert-excel-to-json": "^1.7.4",
-    "@types/google-apps-script": "^1.0.89",
-    "convert-excel-to-json": "^1.7.0",
     "express": "^4.21.2",
-    "uuid": "^11.0.3",
     "xlsx": "^0.18.5",
     "zod": "^3.24.1"
   },
