@@ -39,10 +39,6 @@ export type InputDataShape = {
    Practicantes: InputType<PractitionerPersonDTO>[];
 };
 
-type MapTypes =
-   | [PractitionerPersonDTO, ClinicResourceDTO]
-   | [BranchDTO, PractitionerPersonDTO, ClinicResourceDTO];
-
 type MapShape = {
    Sedes: Record<string, { Practicantes: string; Recursos: string }>;
    // Sedes: {[Sede : string] : {Practicantes : string, Recursos : string}}
@@ -142,11 +138,36 @@ function readMapData(): MapShape {
             (json as MapEspecialidadesRow[]).forEach((row) => {
                const especialidades = row.Especialidad.toString().split(";");
 
-               especialidades.forEach((e) => {
+               especialidades.forEach((e: string) => {
+                  let sedes = "";
+                  let practicantes = "";
+                  let recursos = "";
+
+                  // Concatenate and make unique if the key is already present
+                  if (maps.Especialidades.hasOwnProperty(e)) {
+                     sedes = maps.Especialidades[e].Sedes;
+                     practicantes = maps.Especialidades[e].Practicantes;
+                     recursos = maps.Especialidades[e].Recursos;
+                  }
+
+                  sedes = row.Sede + (sedes ? ";" + sedes : "");
+                  practicantes = row.Practicante + (practicantes ? ";" + practicantes : "");
+                  recursos = row.Recurso + (practicantes ? ";" + recursos : "");
+
+                  const toStringArray = (x: string) =>
+                     [
+                        ...new Set(
+                           x
+                              .split(";")
+                              .filter((y) => y !== "")
+                              .sort()
+                        ),
+                     ].join(";");
+
                   maps.Especialidades[e] = {
-                     Sedes: row.Sede,
-                     Practicantes: row.Practicante,
-                     Recursos: row.Recurso,
+                     Sedes: toStringArray(sedes),
+                     Practicantes: toStringArray(practicantes),
+                     Recursos: toStringArray(recursos),
                   };
                });
             });
