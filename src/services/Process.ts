@@ -140,13 +140,13 @@ function create() {
          .forEach((scriptId) => {
             if (scriptId == "") return; // Empty cell
 
-            const sede = inputData.Sedes.find((x) => x.SCRIPT_ID.toString() === scriptId);
-            if (sede == undefined)
+            const recurso = inputData.Recursos.find((x) => x.SCRIPT_ID.toString() === scriptId);
+            if (recurso == undefined)
                throw new Error(
-                  `[Especialidades Map] - No se encontró la sede con Script ID '${scriptId}'`
+                  `[Especialidades Map] - No se encontró el recurso con Script ID '${scriptId}'`
                );
 
-            sql += genSQL.addSpecialtyToBranch(especialidad.snomedCode, sede.id);
+            sql += genSQL.addSpecialtyToResource(especialidad.snomedCode, recurso.id);
          });
 
       Practicantes.toString()
@@ -154,13 +154,15 @@ function create() {
          .forEach((scriptId) => {
             if (scriptId == "") return; // Empty cell
 
-            const sede = inputData.Sedes.find((x) => x.SCRIPT_ID.toString() === scriptId);
-            if (sede == undefined)
+            const practicante = inputData.Practicantes.find(
+               (x) => x.SCRIPT_ID.toString() === scriptId
+            );
+            if (practicante == undefined)
                throw new Error(
                   `[Especialidades Map] - No se encontró el practicante con Script ID '${scriptId}'`
                );
 
-            sql += genSQL.addSpecialtyToBranch(especialidad.snomedCode, sede.id);
+            sql += genSQL.addSpecialtyToPractitioner(especialidad.snomedCode, practicante.id);
          });
    });
 
