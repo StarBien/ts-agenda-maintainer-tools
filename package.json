@@ -1,6 +1,6 @@
 {
   "name": "agenda-automation",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Herramientas de automatización para tareas de mantenimiento",
   "main": "main.js",
   "scripts": {
