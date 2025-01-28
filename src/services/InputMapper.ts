@@ -71,7 +71,7 @@ export function normalizeData(
    return [translated, success];
 }
 
-// =====================================
+// ============================================================================
 
 export function mapKeys<T extends Record<string, any>>(
    data: T,

@@ -175,7 +175,6 @@ function create() {
    });
 
    const result = consolidateInsertStatements([sql]).join("\n\n");
-   // const result = sql;
    const outputFilePath = "./output/example.sql";
 
    console.log("\n\nWritting output into: ", outputFilePath);
