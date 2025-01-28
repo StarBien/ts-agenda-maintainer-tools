@@ -29,6 +29,7 @@ type ValidTypes = BranchDTO | ClinicDTO | ClinicResourceDTO | PractitionerPerson
 
 export type InputType<T> = T & {
    SCRIPT_ID: number;
+   SCRIPT_ACTION: "CREATE" | "UPDATE" | "DELETE" | "NONE";
 };
 
 export type InputDataShape = {
@@ -41,7 +42,6 @@ export type InputDataShape = {
 
 type MapShape = {
    Sedes: Record<string, { Practicantes: string; Recursos: string }>;
-   // Sedes: {[Sede : string] : {Practicantes : string, Recursos : string}}
    Especialidades: Record<string, { Sedes: string; Practicantes: string; Recursos: string }>;
 };
 
@@ -138,37 +138,33 @@ function readMapData(): MapShape {
             (json as MapEspecialidadesRow[]).forEach((row) => {
                const especialidades = row.Especialidad.toString().split(";");
 
+               console.log("Parsing Map: ", especialidades);
                especialidades.forEach((e: string) => {
-                  let sedes = "";
-                  let practicantes = "";
-                  let recursos = "";
+                  let range = expandRange(e); // ?? [e];
+                  console.log("Expanded range: ", range);
 
-                  // Concatenate and make unique if the key is already present
-                  if (maps.Especialidades.hasOwnProperty(e)) {
-                     sedes = maps.Especialidades[e].Sedes;
-                     practicantes = maps.Especialidades[e].Practicantes;
-                     recursos = maps.Especialidades[e].Recursos;
-                  }
+                  range.forEach((x) => {
+                     let sedes = "";
+                     let practicantes = "";
+                     let recursos = "";
 
-                  sedes = row.Sede + (sedes ? ";" + sedes : "");
-                  practicantes = row.Practicante + (practicantes ? ";" + practicantes : "");
-                  recursos = row.Recurso + (practicantes ? ";" + recursos : "");
+                     // Concatenate and make unique if the key is already present
+                     if (maps.Especialidades.hasOwnProperty(x)) {
+                        sedes = maps.Especialidades[x].Sedes;
+                        practicantes = maps.Especialidades[x].Practicantes;
+                        recursos = maps.Especialidades[x].Recursos;
+                     }
 
-                  const toStringArray = (x: string) =>
-                     [
-                        ...new Set(
-                           x
-                              .split(";")
-                              .filter((y) => y !== "")
-                              .sort()
-                        ),
-                     ].join(";");
+                     sedes = row.Sede + (sedes ? ";" + sedes : "");
+                     practicantes = row.Practicante + (practicantes ? ";" + practicantes : "");
+                     recursos = row.Recurso + (practicantes ? ";" + recursos : "");
 
-                  maps.Especialidades[e] = {
-                     Sedes: toStringArray(sedes),
-                     Practicantes: toStringArray(practicantes),
-                     Recursos: toStringArray(recursos),
-                  };
+                     maps.Especialidades[x] = {
+                        Sedes: expandRange(cleanStringArray(sedes)).join(";"),
+                        Practicantes: expandRange(cleanStringArray(practicantes)).join(";"),
+                        Recursos: expandRange(cleanStringArray(recursos)).join(";"),
+                     };
+                  });
                });
             });
          }
@@ -176,6 +172,74 @@ function readMapData(): MapShape {
 
    return maps;
 }
+
+function readMapData2(): MapShape {
+   const maps: MapShape = <MapShape>{};
+
+   const sheet = workbook.Sheets["Map"];
+
+   type MapSedesRow = {
+      Sede: string;
+      Practicante: string;
+      Recurso: string;
+   };
+
+   type MapEspecialidadesRow = {
+      Especialidad: string;
+      Sede: string;
+      Practicante: string;
+      Recurso: string;
+   };
+
+   sheetsConfig
+      .filter((x) => x.name.startsWith("Map "))
+      .forEach((sheetConfig) => {
+         const json = XLSX.utils.sheet_to_json(sheet, sheetConfig);
+
+         console.log(`Reading map sheet '${sheetConfig.name}'...\n`, json);
+
+         if (sheetConfig.name == "Map Sedes") {
+            readMapRows<MapSedesRow>(
+               json as MapSedesRow[],
+               (row, maps) => {
+                  const sedes = row.Sede.toString().split(";");
+                  sedes.forEach((s) => {
+                     const existing = maps.Sedes[s] || <MapSedesRow>{};
+                     maps.Sedes[s] = {
+                        Practicantes: mergeValues(existing.Practicantes, row.Practicante),
+                        Recursos: mergeValues(existing.Recursos, row.Recurso),
+                     };
+                  });
+               },
+               maps
+            );
+         }
+      });
+
+   return maps;
+}
+
+type SheetProcessor<RowType> = (row: RowType, maps: MapShape) => void;
+
+function readMapRows<RowType>(
+   data: RowType[],
+   processor: SheetProcessor<RowType>,
+   maps: MapShape
+): void {
+   data.forEach((row) => {
+      processor(row, maps);
+   });
+}
+
+// function readMapRows<MapSchemaRowType>(data: MapSchemaRowType[]): void {
+//    // const mapRow : MapSchemaRowType = data[0]
+
+//    for (const row in data) {
+//       const mapRowKeys = row.toString().split(";");
+
+//       mapRowKeys.forEach((x) => {});
+//    }
+// }
 
 function readInputData(): Record<string, any[]> {
    const data: Record<string, any[]> = {};
@@ -232,6 +296,45 @@ const isUUID = (string: string): boolean => {
 
    return true;
 };
+
+function mergeValues(existing: string, incoming: string): string {
+   return cleanStringArray(incoming + (existing ? ";" + existing : ""));
+}
+
+function expandRange(stringRange: string): string[] {
+   /**
+    * Range cases:
+    * Input => "1-4"
+    * Output =? "1;2;3;4"
+    */
+   const rangeMatch = RegExp(/(\d+)-(\d+)/).exec(stringRange);
+
+   if (!rangeMatch) return [stringRange];
+
+   const rangeStart = Number(rangeMatch[1]);
+   const rangeEnd = Number(rangeMatch[2]);
+
+   const rangeLength = rangeMatch ? Math.abs(rangeEnd - rangeStart) : 0;
+
+   return [...Array(rangeLength + 1).fill(0)].map((x, i) => i + rangeStart + "");
+}
+
+function cleanStringArray(stringArray: string, separator = ";") {
+   /**
+    * gets a string array ("1;2;3") and returns a string array
+    * with sorted, unique items, also removing any undefined/empty
+    *
+    * Input => "3;4;2;1;3;4"
+    * Ouput => "1;2;3;4"
+    */
+   const noEmpty = stringArray
+      .split(separator)
+      .filter((y) => y !== "")
+      .sort();
+   const noDuplicates = [...new Set(noEmpty)];
+
+   return noDuplicates.join(separator);
+}
 
 // Execution ==================================================================
 
