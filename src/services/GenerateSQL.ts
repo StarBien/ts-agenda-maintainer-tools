@@ -76,13 +76,14 @@ export class GenerateSQL implements GenerateSQLInterface {
    createSpecialty(specialty: SpecialtyDTO): string {
       let template = `
 		INSERT INTO medical.specialties
-			(snomed_code, snomed_label, starbien_label, specialty_type, practice_type)
+			(snomed_code, snomed_label, starbien_label, specialty_type, practice_type, tags)
 		VALUES (
 			'${specialty.snomedCode}',
 			'${specialty.snomedLabel}',
 			'${specialty.starbienLabel}',
 			'${specialty.specialtyType}',
-			'${specialty.practiceType}'
+			'${specialty.practiceType}',
+         '${specialty.tags}'
 		) ON CONFLICT DO NOTHING;
 		`;
 
@@ -93,12 +94,13 @@ export class GenerateSQL implements GenerateSQLInterface {
       let template = `
         -- ADD NEW CLINIC '${clinic.name.toUpperCase()}'
         INSERT INTO medical.clinics
-        (id, name, has_online_booking, location_type)
+        (id, name, has_online_booking, location_type, tags)
         VALUES (
             '${clinic.id}',
             '${clinic.name}',
-            false,
-            'AT_FACILITIES'
+            ${clinic.hasOnlineBooking},
+            '${clinic.locationType}',
+            '${clinic.tags}'
         ) ON CONFLICT DO NOTHING;
         `;
 
@@ -114,7 +116,7 @@ export class GenerateSQL implements GenerateSQLInterface {
         (
             '${branch.id}',
             '${branch.clinicId}',
-            '${branch.name || "NULL"}',
+            '${branch.name}',
             '${branch.country || "NULL"}',
             '${branch.region || "NULL"}',
             '${branch.commune || "NULL"}',
@@ -145,11 +147,11 @@ export class GenerateSQL implements GenerateSQLInterface {
 				'${clinicResource.region || "NULL"}',
 				'${clinicResource.commune || "NULL"}',
 				'${clinicResource.streetName || "NULL"}',
-				'${clinicResource.streetNumber || "NULL"}',
-				'${clinicResource.documentType || "NULL"}',
-				'${clinicResource.documentValue || "NULL"}',
-				'${clinicResource.documentCountry || "NULL"}',
-				'${clinicResource.photo || "NULL"}'
+				${clinicResource.streetNumber || "NULL"},
+				'${clinicResource.documentType}',
+				'${clinicResource.documentValue}',
+				'${clinicResource.documentCountry}',
+				'${clinicResource.photo}'
 			)
       ON CONFLICT DO NOTHING;
 		`;
