@@ -6,8 +6,11 @@ type InsertStatement = {
 };
 
 export function consolidateInsertStatements(sqlStatements: string[]): string[] {
+   //    const insertRegex =
+   //       /INSERT INTO (\S+)\s+\(([^)]+)\)\s+VALUES\s*\(([^)]+)\)\s*(ON CONFLICT .*)?;?/gi;
+
    const insertRegex =
-      /INSERT INTO (\S+)\s+\(([^)]+)\)\s+VALUES\s*\(([^)]+)\)\s*(ON CONFLICT .*)?;?/gi;
+      /INSERT INTO (\S+)\s+\(([^)]+)\)\s+VALUES\s*\(\s*((?:(?:[^)(]+|\([^)]*\))+)\s*)\)\s*(ON CONFLICT .*)?;/gi;
 
    const groupedStatements: Record<string, InsertStatement> = {};
 
