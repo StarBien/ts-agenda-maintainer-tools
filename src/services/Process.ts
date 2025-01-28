@@ -28,26 +28,28 @@ type ItemsTree = {
 };
 
 create();
-update();
+// update();
 
 function create() {
    let sql = "";
 
    // Create Specialties
    inputData.Especialidades.forEach((especialidad) => {
-      // TODO Create Specialties
-      sql += genSQL.createSpecialty(especialidad);
+      if (especialidad.SCRIPT_ACTION == "CREATE") {
+         sql += genSQL.createSpecialty(especialidad);
+      }
    });
 
    // Create Clinics
    inputData.Clinicas.forEach((clinica) => {
       //   clinica.SCRIPT_ID
-      sql += genSQL.createClinic(clinica);
+      if (clinica.SCRIPT_ACTION == "CREATE") {
+         sql += genSQL.createClinic(clinica);
+      }
    });
 
    // Create Branches
    inputData.Sedes.forEach((sede) => {
-      // TODO Link Branch to Clinic
       // Si una sede fue vinculada a una clinica por crear, se recupera el SCRIPT_ID correspondiente a la nueva clinica
       let matchClinicScriptId = /C(\d+)/.exec(sede.clinicId);
 
@@ -57,17 +59,23 @@ function create() {
 
       sede.clinicId = clinicId;
 
-      sql += genSQL.createBranch(sede);
+      if (sede.SCRIPT_ACTION == "CREATE") {
+         sql += genSQL.createBranch(sede);
+      }
    });
 
    // Create Practitioners (Table persons + medics)
    inputData.Practicantes.forEach((practitioner) => {
-      sql += genSQL.createPractitioner(practitioner);
+      if (practitioner.SCRIPT_ACTION == "CREATE") {
+         sql += genSQL.createPractitioner(practitioner);
+      }
    });
 
    // Create Resources
    inputData.Recursos.forEach((resource) => {
-      sql += genSQL.createClinicResource(resource);
+      if (resource.SCRIPT_ACTION == "CREATE") {
+         sql += genSQL.createClinicResource(resource);
+      }
    });
 
    // Run Sedes Map
@@ -167,6 +175,7 @@ function create() {
    });
 
    const result = consolidateInsertStatements([sql]).join("\n\n");
+   // const result = sql;
    const outputFilePath = "./output/example.sql";
 
    console.log("\n\nWritting output into: ", outputFilePath);
