@@ -8,14 +8,10 @@ import { consolidateInsertStatements } from "@utils/consolidate-sql-statements";
 
 const genSQL = new GenerateSQL(inputData);
 
-type ScriptType<T> = T & {
-   SCRIPT_ID: number;
-};
-
 /** Recorrer cada mapa, y aplicar el flujo desde la Clinica al Recurso */
 
 type ProcessState = {
-   Clinics: ScriptType<ClinicDTO>[];
+   Clinics: InputType<ClinicDTO>[];
 };
 
 const test: ProcessState = {
@@ -27,16 +23,21 @@ type ItemsTree = {
    Branches: any;
 };
 
-create();
-// update();
+process();
 
-function create() {
+function process() {
    let sql = "";
 
    // Create Specialties
    inputData.Especialidades.forEach((especialidad) => {
       if (especialidad.SCRIPT_ACTION == "CREATE") {
          sql += genSQL.createSpecialty(especialidad);
+      }
+      if (especialidad.SCRIPT_ACTION == "UPDATE") {
+         // sql += genSQL.updateSpecialty(especialidad)
+      }
+      if (especialidad.SCRIPT_ACTION == "DELETE") {
+         // sql += genSQL.deleteSpecialty(especialidad)
       }
    });
 
@@ -184,7 +185,3 @@ function create() {
 // ------------------------------------------------------------------
 // UPDATE DB ========================================================
 // ------------------------------------------------------------------
-
-function update() {
-   return;
-}
