@@ -87,7 +87,7 @@ const sheetsConfig: (XLSX.Sheet2JSONOpts & { name: string; schema?: z.ZodObject<
    {
       ...defaultSheetConfig,
       name: "Map Especialidad",
-      range: "F4:I10",
+      range: "F4:I17",
    },
 ];
 
@@ -138,7 +138,9 @@ function readMapData(): MapShape {
             (json as MapEspecialidadesRow[]).forEach((row) => {
                const especialidades = row.Especialidad.toString().split(";");
 
+               if (especialidades.every((x) => x == "")) return false; // Cells with partial blank/empty cells
                console.log("Parsing Map: ", especialidades);
+
                especialidades.forEach((e: string) => {
                   let range = expandRange(e); // ?? [e];
                   console.log("Expanded range: ", range);
