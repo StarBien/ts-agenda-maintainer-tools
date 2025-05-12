@@ -94,12 +94,11 @@ export class GenerateSQL implements GenerateSQLInterface {
       let template = `
         -- ADD NEW CLINIC '${clinic.name.toUpperCase()}'
         INSERT INTO medical.clinics
-        (id, name, has_online_booking, location_type, tags)
+        (id, name, has_online_booking, tags)
         VALUES (
             '${clinic.id}',
             '${clinic.name}',
             ${clinic.hasOnlineBooking},
-            '${clinic.locationType}',
             '${clinic.tags}'
         ) ON CONFLICT DO NOTHING;
         `;
@@ -111,7 +110,7 @@ export class GenerateSQL implements GenerateSQLInterface {
       let template = `
         -- ADD BRANCH 
         INSERT INTO medical.branches
-        (id, clinic_id, name, country, region, commune, city, street_name, street_number, rest_of_address, latitude, longitude, altitude, phone)
+        (id, clinic_id, name, country, region, commune, city, street_name, street_number, rest_of_address, latitude, longitude, altitude, phone, attendance_type)
         VALUES 
         (
             '${branch.id}',
@@ -127,7 +126,8 @@ export class GenerateSQL implements GenerateSQLInterface {
             ${branch.latitude},
             ${branch.longitude},
             ${branch.altitude || 0},
-            '${branch.phone || "NULL"}'
+            '${branch.phone || "NULL"}',
+				'${branch.attendanceType}'
         ) ON CONFLICT DO NOTHING;
         `;
 

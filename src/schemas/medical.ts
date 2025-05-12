@@ -57,7 +57,6 @@ export const ClinicDTO_Schema = z.object({
    id: z.string(),
    name: z.string(),
    hasOnlineBooking: z.boolean(),
-   locationType: z.nativeEnum(LocationType).optional(),
    tags: z.string().optional(),
 });
 
@@ -78,6 +77,8 @@ export const BranchDTO_Schema = z.object({
    longitude: z.number(),
    altitude: z.number().default(0),
    phone: z.string().optional(),
+   tags: z.string(),
+   attendanceType: z.string(),
 });
 
 export type BranchDTO = z.infer<typeof BranchDTO_Schema>;
