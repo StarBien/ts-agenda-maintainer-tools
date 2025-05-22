@@ -22,7 +22,10 @@ export function consolidateInsertStatements(sqlStatements: string[]): string[] {
             const [, tableName, columns, values, conflictClause] = match;
 
             const columnList = columns.split(",").map((col) => col.trim());
-            const valueList = values.split(",").map((value) => value.trim());
+            // Regex to match values but avoid separating between commas in a string value
+            const valueList = values
+               .split(/(?<=(?:'|\d|NULL|true|false|TRUE|FALSE)),/)
+               .map((value) => value.trim());
 
             if (!groupedStatements[tableName]) {
                groupedStatements[tableName] = {
