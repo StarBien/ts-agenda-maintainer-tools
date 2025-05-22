@@ -74,16 +74,37 @@ export class GenerateSQL implements GenerateSQLInterface {
    }
 
    createSpecialty(specialty: SpecialtyDTO): string {
+      const keywordsParsed = specialty.keywords
+         ? specialty.keywords
+              .split(",")
+              .map((x) => x.trim())
+              .filter((x) => x !== "")
+              .join(",")
+         : "NULL";
+
+      const parseKeywords = (keywords: string | undefined) => {
+         return keywords
+            ? keywords
+                 .split(",")
+                 .map((x) => x.trim())
+                 .filter((x) => x !== "")
+                 .join(",")
+            : "NULL";
+      };
+
+      console.log("Keywords parsed: ", parseKeywords(specialty.keywords));
+
       let template = `
 		INSERT INTO medical.specialties
-			(snomed_code, snomed_label, starbien_label, specialty_type, practice_type, tags)
+			(snomed_code, snomed_label, starbien_label, specialty_type, practice_type, tags, keywords)
 		VALUES (
 			'${specialty.snomedCode}',
 			'${specialty.snomedLabel}',
 			'${specialty.starbienLabel}',
 			'${specialty.specialtyType}',
 			'${specialty.practiceType}',
-         '${specialty.tags}'
+         '${specialty.tags}',
+         '${parseKeywords(specialty.keywords)}'
 		) ON CONFLICT DO NOTHING;
 		`;
 
@@ -189,12 +210,10 @@ export class GenerateSQL implements GenerateSQLInterface {
 
       const medics_template = `        
         -- ADD NEW PRACTITIONERS AS MEDICS
-        INSERT INTO medical.medics (id, photo, attendance_type, location_type)
+        INSERT INTO medical.medics (id, photo)
         VALUES (
             '${practitioner.id}',
-            '${genericPractitionerIcon}',
-            'IN_PERSON',
-            'AT_FACILITIES'
+            '${genericPractitionerIcon}'
         )
         ON CONFLICT DO NOTHING;`;
 
