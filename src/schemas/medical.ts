@@ -49,6 +49,7 @@ export const SpecialtyDTO_Schema = z.object({
    specialtyType: z.nativeEnum(SpecialtyType).optional(),
    practiceType: z.nativeEnum(PracticeType).optional(),
    tags: z.string().optional(),
+   keywords: z.string().optional(),
 });
 
 export type SpecialtyDTO = z.infer<typeof SpecialtyDTO_Schema>;
